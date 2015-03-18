@@ -1,12 +1,11 @@
 ;(function(chrome) {
 
     var theUrl = 'www.amazon.co.jp/gp/product/B00NNJ5B0E/';
-    var refreshInterval = 10000
+    var refreshInterval = 10000;
     var notifyCount = 0;
+    var debug = false;
 
-    function np() {
-
-    }
+    function np() {}
 
     function notifyOpt(msg) {
         return { type: 'basic',
@@ -42,11 +41,12 @@
     }
 
     function run(timer) {
-        //chrome.notifications.create("notification-action-start", notifyOpt("starting working"), np);
-
-        console.log("count:", notifyCount++)
-        if (timer && notifyCount >= 3) {
-            clearInterval(timer);
+        if (debug) {
+            chrome.notifications.create("notification-action-start", notifyOpt("starting working"), np);
+            console.log("count:", notifyCount++)
+            if (notifyCount >= 3) {
+                clearInterval(timer);
+            }
         }
 
         chrome.tabs.query({}, function (tabs) {
@@ -64,7 +64,7 @@
     }
 
     var timer = setInterval(function () {
-        run()
+        run(timer)
     }, refreshInterval);
 
 
