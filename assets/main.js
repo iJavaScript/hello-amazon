@@ -1,59 +1,72 @@
 ;(function(chrome) {
 
-    var theUrl = 'http://www.amazon.co.jp/gp/product/B00NNJ5B0E/ref=ox_sc_sfl_title_2?ie=UTF8&psc=1&smid=AN1VRQENFRJN5',
-        notifyCount = 2;
+    var theUrl = 'www.amazon.co.jp/gp/product/B00NNJ5B0E/';
+    var refreshInterval = 10000
+    var notifyCount = 0;
+
+    function np() {
+
+    }
+
+    function notifyOpt(msg) {
+        return { type: 'basic',
+                 title: "Hello Amazon",
+                 message: msg,
+                 iconUrl: "/assets/imgs/icon_128.png",
+                 expandedMessage: msg
+               };
+    }
+
 
     function isTheUrl(tab) {
-        return tab.url.indexOf(theUrl) >= 0;
+        return tab.url.indexOf(theUrl) >= 7;
     }
 
     function focusTab(ids) {
-        chrome.tabs.highlight({tabs: ids}, function () {
-        });
+        chrome.tabs.highlight({tabs: ids}, np);
     }
 
-    function reloadTab(id, timer) {
-        chrome.tabs.reload(id, {}, function findDesiredEls() {
-            var codeStr = 'var x = document.getElementById("add-to-cart-button"); x.value; ';
+    function reloadTab(tabId, tabIndex) {
 
-            chrome.tabs.executeScript(id, {code: codeStr}, function (resp) {
-                notifyCount--;
-                if (notifyCount < 0) {
-                    clearInterval(timer);
-                }
-                if (!!resp) {
-                    console.log('~~~~', resp);
-                    chrome.notifications.create(
-                        null,
-                        {type: 'basic',
-                         //contextMessage: resp,
-                         title: "Basic Notification",
-                         message: "Short message part",
-                         expandedMessage: "Longer part of the message"
-                        },
-                        function () {
+        chrome.tabs.reload(tabId, {}, function findDesiredEls() {
+            var codeStr = 'var x = document.querySelectorAll("#baby disapers ul li"); x.length; ';
 
-                        });
+            chrome.tabs.executeScript(tabId, {code: codeStr}, function (resp) {
+                if (resp>0) {
+                    chrome.notifications.create("notification-running", notifyOpt("found trove !!! "), np);
+                    focusTab([tabIndex]);
                 }
             });
 
         });
     }
 
+    function run(timer) {
+        //chrome.notifications.create("notification-action-start", notifyOpt("starting working"), np);
 
-    chrome.tabs.query({}, function (tabs) {
-        console.log(tabs.filter);
+        console.log("count:", notifyCount++)
+        if (timer && notifyCount >= 3) {
+            clearInterval(timer);
+        }
 
-        var ts = tabs.filter(isTheUrl),
-            tIndexs = ts.map(function (t) { return t.index; }),
-            tIds = ts.map(function (t) { return t.id; }),
-            id = tIds[0];
+        chrome.tabs.query({}, function (tabs) {
 
-        console.log(id);
+            var ts = tabs.filter(isTheUrl);
 
-        var timer = setInterval(function () {
-            reloadTab(id, timer);
-        }, 3000);
+            if (ts.length > 0) {
+                var tab = ts[0],
+                    tindex = tab.index,
+                    tid = tab.id;
+                reloadTab(tid, tindex);
+            }
 
-    });
+        });
+    }
+
+    var timer = setInterval(function () {
+        run()
+    }, refreshInterval);
+
+
+
 })(chrome);
