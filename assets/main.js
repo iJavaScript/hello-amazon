@@ -1,7 +1,7 @@
 ;(function(chrome) {
 
     var theUrl = 'www.amazon.co.jp/gp/product/B00NNJ5B0E/';
-    var refreshInterval = 10000;
+    var refreshInterval = 15000;
     var notifyCount = 0;
     var debug = false;
 
