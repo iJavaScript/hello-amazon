@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "Hello World",
+    "version": "2.1",
+    "minimum_chrome_version": "23",
+    "icons": {
+        "16": "assets/imgs/icon_16.png",
+        "128": "assets/imgs/icon_128.png"
+    },
+    "background": {
+        "scripts": ["assets/main.js"]
+    },
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "notifications",
+        "http://www.amazon.co.jp/*",
+        "https://www.amazon.co.jp/*"
+    ]
+}
