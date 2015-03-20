@@ -28,10 +28,11 @@
     function reloadTab(tabId, tabIndex) {
 
         chrome.tabs.reload(tabId, {}, function findDesiredEls() {
-            var codeStr = 'var x = document.querySelectorAll("#baby disapers ul li"); x.length; ';
+            var codeStr = 'var x = document.querySelectorAll("#twister ul li"); x.length; ';
 
             chrome.tabs.executeScript(tabId, {code: codeStr}, function (resp) {
                 if (resp>0) {
+                    console.debug('Found something ...', resp)
                     chrome.notifications.create("notification-running", notifyOpt("found trove !!! "), np);
                     focusTab([tabIndex]);
                 }
